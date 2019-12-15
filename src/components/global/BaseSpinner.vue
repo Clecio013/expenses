@@ -1,8 +1,27 @@
 <template>
-  <div class="base-spinner fa-3x">
+  <div class="base-spinner fa-3x" v-if="visible">
     <i class="fas fa-circle-notch fa-spin"></i>
   </div>
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+      visible: false
+    }
+  },
+  created () {
+    this.$root.$on('Spinner::show', this.alternarSpinner)
+    this.$root.$on('Spinner::hide', this.alternarSpinner)
+  },
+  methods: {
+    alternarSpinner () {
+      this.visible = !this.visible
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import '../../assets/scss/variables';
