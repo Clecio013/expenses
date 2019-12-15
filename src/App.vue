@@ -14,6 +14,9 @@ export default {
   components: {
     BaseSpinner
   },
+  mounted () {
+    console.log(this.$firebase)
+  },
   methods: {
     mostrarSpinner () {
       this.$root.$emit('Spinner::show')
