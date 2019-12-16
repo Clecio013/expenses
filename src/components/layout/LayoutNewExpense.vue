@@ -24,7 +24,7 @@
 
                 <div class="form-group col-4" required>
                   <label for="value">Valor ($RS)</label>
-                  <input v-model="form.value"  type="text" name="value" id="value" class="form-control">
+                  <input v-model.number="form.value"  type="text" name="value" id="value" class="form-control">
                 </div>
 
                 <div class="form-group col-12 flex-column d-flex align-items-center">
