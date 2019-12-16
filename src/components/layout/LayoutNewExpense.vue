@@ -26,6 +26,27 @@
                   <label for="value">Valor ($RS)</label>
                   <input v-model="form.value"  type="text" name="value" id="value" class="form-control">
                 </div>
+
+                <div class="form-group col-12 flex-column d-flex align-items-center">
+                  <input
+                    ref="input"
+                    type="file"
+                    class="d-none"
+                    @change="handleFile($event)"
+                    accept="image/*"
+                  >
+                  <button @click="openFileDialog()" type="button" class="btn w-50 btn-outline-secondary">
+                    Adicionar comprovante
+                  </button>
+
+                  <div class="mt-2" v-if="form.receipt">
+                    {{ form.receipt }}
+
+                    <button @click="form.receipt = ''" class="btn badge badge-light">
+                      <i class="fa fa-trash text-danger" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="modal-footer">
@@ -48,34 +69,70 @@ export default {
     return {
       showModal: false,
       form: {
+        receipt: '',
         description: '',
         value: ''
       }
     }
   },
-  methods: {
-    submit () {
-      this.$root.$emit('Spinner::show')
-      const ref = this.$firebase.database().ref(window.uid)
-      const id = ref.push().key
+  computed: {
+    fileName () {
+      const { receipt } = this.form
 
-      const payload = {
-        id,
-        receipt: null,
-        value: this.form.value,
-        createdAt: new Date().getTime(),
-        description: this.form.description
+      if (receipt) {
+        const split = receipt.name.split('.')
+        return `${split[0]}-${new Date().getTime()}.${split[1]}`
+      } else {
+        return ''
       }
+    }
+  },
+  methods: {
+    openFileDialog () {
+      this.$refs.input.value = null
+      this.$refs.input.click()
+    },
+    handleFile ({ target }) {
+      this.form.receipt = target.files[0]
+    },
+    async submit () {
+      let url = ''
 
-      ref.child(id).set(payload, err => {
-        this.$root.$emit('Spinner::hide')
+      try {
+        this.$root.$emit('Spinner::show')
+        const ref = this.$firebase.database().ref(window.uid)
+        const id = ref.push().key
 
-        if (err) {
-          console.log(err)
-        } else {
-          this.closeModal()
+        if (this.form.receipt) {
+          const snapshot = await this.$firebase.storage()
+            .ref(window.uid)
+            .child(this.fileName)
+            .put(this.form.receipt)
+
+          url = await snapshot.ref.getDownloadURL()
         }
-      })
+
+        const payload = {
+          id,
+          ...this.form,
+          receipt: url,
+          createdAt: new Date().getTime()
+        }
+
+        ref.child(id).set(payload, err => {
+          this.$root.$emit('Spinner::hide')
+
+          if (err) {
+            console.log(err)
+          } else {
+            this.closeModal()
+          }
+        })
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.$root.$emit('Spinner::hide')
+      }
     },
     closeModal () {
       this.showModal = false
