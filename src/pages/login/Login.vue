@@ -25,8 +25,15 @@
           >
         </div>
 
-        <button class="btn btn-primary w-100">
-          Enviar
+        <button class="btn btn-primary w-100" :disabled="loading">
+          <template v-if="loading">
+            Entrando ...
+            <i class="fa fa-spinner" />
+          </template>
+          <template v-else>
+            Enviar
+            <i class="fa fa-sign-in-alt" />
+          </template>
         </button>
       </div>
     </div>
@@ -38,8 +45,9 @@ export default {
   name: 'Login',
   data () {
     return {
-      email: '',
-      password: ''
+      loading: false,
+      email: 'email@email.com',
+      password: '123456'
     }
   },
   methods: {
@@ -47,14 +55,29 @@ export default {
       const { email, password } = this
 
       try {
+        this.loading = true
         const res = await this.$firebase.auth().signInWithEmailAndPassword(email, password)
+
+        window.uid = res.user.uid
+
+        this.$router.push('/home')
+
         console.log(res)
       } catch (err) {
         console.log(err)
+      } finally {
+        this.loading = false
       }
 
       console.log('login')
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if (window.uid) {
+        vm.$router.push({ name: 'home' })
+      }
+    })
   }
 }
 </script>
