@@ -17,16 +17,21 @@
       </router-link>
     </div>
 
+    <hr>
+
+    <layout-new-expense />
+
     <layout-logout />
   </nav>
 </template>
 
 <script>
 import LayoutLogout from './LayoutLogout'
+import LayoutNewExpense from './LayoutNewExpense'
 
 export default {
   name: 'LayoutNavigation',
-  components: { LayoutLogout },
+  components: { LayoutLogout, LayoutNewExpense },
   computed: {
     routerLinks () {
       return this.$router.options.routes.filter(r => r.name !== 'login')
