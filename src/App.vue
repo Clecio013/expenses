@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <base-spinner />
+    <layout-notification />
 
     <div class="container-fluid" v-if="isLogged">
       <div class="row">
@@ -21,6 +22,7 @@
 <script>
 import BaseSpinner from '@/components/global/BaseSpinner'
 import LayoutNavigation from '@/components/layout/LayoutNavigation'
+import LayoutNotification from '@/components/layout/LayoutNotification'
 
 export default {
   name: 'App',
@@ -31,7 +33,8 @@ export default {
   },
   components: {
     BaseSpinner,
-    LayoutNavigation
+    LayoutNavigation,
+    LayoutNotification
   },
   mounted () {
     this.$firebase.auth().onAuthStateChanged(user => {

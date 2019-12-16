@@ -51,7 +51,15 @@
             </div>
             <div class="modal-footer">
               <button type="button" @click="closeModal()" class="btn btn-secondary">Fechar</button>
-              <button type="submit" class="btn btn-primary">Incluir novo gasto</button>
+              <button type="submit" class="btn btn-primary" :disabled="loading">
+                <template v-if="loading">
+                  <i class="fa fa-spin fa-spinner" />
+                  Incluido ...
+                </template>
+                <template v-else>
+                  Incluir novo gasto
+                </template>
+              </button>
             </div>
           </div>
         </div>
@@ -68,6 +76,7 @@ export default {
   data () {
     return {
       showModal: false,
+      loading: false,
       form: {
         receipt: '',
         description: '',
@@ -97,6 +106,7 @@ export default {
     },
     async submit () {
       let url = ''
+      this.loading = true
 
       try {
         this.$root.$emit('Spinner::show')
@@ -120,18 +130,29 @@ export default {
         }
 
         ref.child(id).set(payload, err => {
-          this.$root.$emit('Spinner::hide')
-
           if (err) {
-            console.log(err)
+            this.$root.$emit('Notification::show', {
+              type: 'danger',
+              message: 'Não foi possivel inserir o gasto, tente novamente'
+            })
+            this.loading = false
           } else {
+            this.$root.$emit('Notification::show', {
+              type: 'success',
+              message: 'Gasto inserido com sucess!'
+            })
             this.closeModal()
+            this.loading = false
           }
         })
       } catch (err) {
-        console.log(err)
+        this.$root.$emit('Notification::show', {
+          type: 'danger',
+          message: 'Não foi possivel inserir o gasto, tente novamente'
+        })
       } finally {
         this.$root.$emit('Spinner::hide')
+        this.loading = false
       }
     },
     closeModal () {

@@ -61,15 +61,28 @@ export default {
         window.uid = res.user.uid
 
         this.$router.push('/home')
-
-        console.log(res)
       } catch (err) {
+        let message = ''
+
+        switch (err.code) {
+          case 'auth/user-not-found':
+            message = 'Não foi possivel localizar o usuario'
+            break
+          case 'auth/wrong-password':
+            message = 'Senha invalida'
+            break
+          default:
+            message = 'Não foi possivel fazer login, tente novamente'
+        }
+
+        this.$root.$emit('Notification::show', {
+          type: 'danger',
+          message
+        })
         console.log(err)
       } finally {
         this.loading = false
       }
-
-      console.log('login')
     }
   },
   beforeRouteEnter (to, from, next) {
