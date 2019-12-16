@@ -17,19 +17,19 @@ const routes = new VueRouter({
       component: () => import(/* webpackChunkName: "home" */ '@/pages/home/Home')
     },
     {
-      path: '/lista-gastos',
-      name: 'lista-gastos',
+      name: 'expenses-list',
+      path: '/expenses-list',
       meta: {
-        icon: 'list-ul',
-        title: 'Lista Gastos'
+        icon: 'list-ul', title: 'Lista Gastos'
       },
-      component: () => import(/* webpackChunkName: "home" */ '@/pages/lista-gastos/ListaGastos')
+      component: () => import(/* webpackChunkName: "expenses-list" */'@/pages/expenses-list/ExpensesList'
+      )
     },
     {
       path: '/login',
       name: 'login',
       meta: {
-        title: 'Lista Gastos'
+        title: 'Login'
       },
       // route level code-splitting
       // this generates a separate chunk (login.[hash].js) for this route
